@@ -1,59 +1,28 @@
-Player = Entity.extend({
-    id: 0,
-
-    /**
-     * Moving speed
-     */
-    velocity: 2,
-
-    /**
-     * Max number of bombs user can spawn
-     */
-    bombsMax: 1,
-
-    /**
-     * How far the fire reaches when bomb explodes
-     */
-    bombStrength: 1,
-
-    /**
-     * Entity position on map grid
-     */
-    position: {},
-
-    /**
-     * Bitmap dimensions
-     */
-    size: {
+class Player extends Entity {
+    id = 0;
+    velocity =  2;
+    bombsMax = 1;
+    bombStrength = 1;
+    position = {};
+    size = {
         w: 48,
         h: 48
-    },
-
-    /**
-     * Bitmap animation
-     */
-    bmp: null,
-
-    alive: true,
-
-    bombs: [],
-
-    controls: {
+    };
+    bmp = null;
+    alive =  true;
+    bombs = [];
+    controls = {
         'up': 'up',
         'left': 'left',
         'down': 'down',
         'right': 'right',
         'bomb': 'bomb'
-    },
+    };
+    escapeBomb = null;
+    deadTimer = 0;
 
-    /**
-     * Bomb that player can escape from even when there is a collision
-     */
-    escapeBomb: null,
-
-    deadTimer: 0,
-
-    init: function(position, controls, id) {
+    constructor(position, controls, id) {
+        super();
         if (id) {
             this.id = id;
         }
@@ -84,7 +53,6 @@ Player = Entity.extend({
             }
         });
         this.bmp = new createjs.Sprite(spriteSheet);
-
         this.position = position;
         var pixels = Utils.convertToBitmapPosition(position);
         this.bmp.x = pixels.x;
@@ -94,9 +62,9 @@ Player = Entity.extend({
 
         this.bombs = [];
         this.setBombsListener();
-    },
+    }
 
-    setBombsListener: function() {
+    setBombsListener() {
         // Subscribe to bombs spawning
         if (!(this instanceof Bot)) {
             var that = this;
@@ -128,9 +96,9 @@ Player = Entity.extend({
                 }
             });
         }
-    },
+    }
 
-    update: function() {
+    update() {
         if (!this.alive) {
             //this.fade();
             return;
@@ -192,13 +160,13 @@ Player = Entity.extend({
         }
 
         this.handleBonusCollision();
-    },
+    }
 
     /**
      * Checks whether we are on corner to target position.
      * Returns position where we should move before we can go to target.
      */
-    getCornerFix: function(dirX, dirY) {
+    getCornerFix(dirX, dirY) {
         var edgeSize = 30;
 
         // fix position to where we should go first
@@ -235,19 +203,19 @@ Player = Entity.extend({
         if (position.x &&  gGameEngine.getTileMaterial(position) == 'grass') {
             return Utils.convertToBitmapPosition(position);
         }
-    },
+    }
 
     /**
      * Calculates and updates entity position according to its actual bitmap position
      */
-    updatePosition: function() {
+    updatePosition() {
         this.position = Utils.convertToEntityPosition(this.bmp);
-    },
+    }
 
     /**
      * Returns true when collision is detected and we should not move to target position.
      */
-    detectWallCollision: function(position) {
+    detectWallCollision(position) {
         var player = {};
         player.left = position.x;
         player.top = position.y;
@@ -270,12 +238,12 @@ Player = Entity.extend({
             }
         }
         return false;
-    },
+    }
 
     /**
      * Returns true when the bomb collision is detected and we should not move to target position.
      */
-    detectBombCollision: function(pixels) {
+    detectBombCollision(pixels) {
         var position = Utils.convertToEntityPosition(pixels);
 
         for (var i = 0; i < gGameEngine.bombs.length; i++) {
@@ -297,9 +265,9 @@ Player = Entity.extend({
         }
 
         return false;
-    },
+    }
 
-    detectFireCollision: function() {
+    detectFireCollision() {
         var bombs = gGameEngine.bombs;
         for (var i = 0; i < bombs.length; i++) {
             var bomb = bombs[i];
@@ -312,12 +280,12 @@ Player = Entity.extend({
             }
         }
         return false;
-    },
+    }
 
     /**
      * Checks whether we have got bonus and applies it.
      */
-    handleBonusCollision: function() {
+    handleBonusCollision() {
         for (var i = 0; i < gGameEngine.bonuses.length; i++) {
             var bonus = gGameEngine.bonuses[i];
             if (Utils.comparePositions(bonus.position, this.position)) {
@@ -325,12 +293,12 @@ Player = Entity.extend({
                 bonus.destroy();
             }
         }
-    },
+    }
 
     /**
      * Applies bonus.
      */
-    applyBonus: function(bonus) {
+    applyBonus(bonus) {
         if (bonus.type == 'speed') {
             this.velocity += 0.8;
         } else if (bonus.type == 'bomb') {
@@ -338,18 +306,18 @@ Player = Entity.extend({
         } else if (bonus.type == 'fire') {
             this.bombStrength++;
         }
-    },
+    }
 
     /**
      * Changes animation if requested animation is not already current.
      */
-    animate: function(animation) {
+    animate = (animation) => {
         if (!this.bmp.currentAnimation || this.bmp.currentAnimation.indexOf(animation) === -1) {
             this.bmp.gotoAndPlay(animation);
         }
-    },
+    }
 
-    die: function() {
+    die() {
         this.alive = false;
 
         if (gGameEngine.countPlayersAlive() == 1 && gGameEngine.playersCount == 2) {
@@ -360,9 +328,9 @@ Player = Entity.extend({
 
         this.bmp.gotoAndPlay('dead');
         this.fade();
-    },
+    }
 
-    fade: function() {
+    fade() {
         var timer = 0;
         var bmp = this.bmp;
         var fade = setInterval(function() {
@@ -377,4 +345,4 @@ Player = Entity.extend({
 
         }, 30);
     }
-});
+}

@@ -1,25 +1,26 @@
-Tile = Entity.extend({
+class Tile extends Entity {
     /**
      * Entity position on map grid
      */
-    position: {},
+    position = {};
 
     /**
      * Bitmap dimensions
      */
-    size: {
+    size = {
         w: 32,
         h: 32
-    },
+    };
 
     /**
      * Bitmap animation
      */
-    bmp: null,
+    bmp = null;
 
-    material: '',
+    material = '';
 
-    init: function(material, position) {
+    constructor(material, position) {
+        super();
         this.material = material;
         this.position = position;
         var img;
@@ -34,12 +35,12 @@ Tile = Entity.extend({
         var pixels = Utils.convertToBitmapPosition(position);
         this.bmp.x = pixels.x;
         this.bmp.y = pixels.y;
-    },
+    }
 
-    update: function() {
-    },
+    update() {
+    }
 
-    remove: function() {
+    remove() {
         gGameEngine.stage.removeChild(this.bmp);
         for (var i = 0; i < gGameEngine.tiles.length; i++) {
             var tile = gGameEngine.tiles[i];
@@ -48,4 +49,11 @@ Tile = Entity.extend({
             }
         }
     }
-});
+
+    state() {
+      return {
+        position: this.position,
+        material: this.material
+      }
+    }
+}
